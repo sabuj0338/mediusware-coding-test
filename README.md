@@ -25,3 +25,36 @@ $ php artisan migrate
 ```bash
 $ php artisan serve
 ```
+
+### Logics at a glance
+```
+  $user = User::find($request->user_id);
+
+  $fee = 0;
+
+  $isFriday = Carbon::now()->format('l') == "Friday" ? true : false;
+
+  if ($user->account_type == 'individual') {
+    if ($isFriday == false) {
+      $thisMonthSum = Transaction::where('user_id', $user->id)->where('transaction_type', 'deposit')->whereMonth('date', '=', Carbon::now()->month)->sum('amount');
+      // $lastMonthSum = Transaction::where('user_id', $user->id)->whereMonth('date', '=', Carbon::now()->subMonth()->month)->sum('amount');
+
+      if($thisMonthSum >= 5000) {
+        if($request->amount >= 1000) {
+          $amount = ($request->amount - 1000);
+          $fee = ($amount * 0.015) / 100;
+        } else {
+          $fee = ($request->amount * 0.015) / 100;
+        }
+      }
+    }
+  } else if ($user->account_type == 'business') {
+    $totalWithdrawal = Transaction::where('user_id', $user->id)->where('transaction_type', 'withdrawal')->sum('amount');
+
+    if($totalWithdrawal >= 50000) {
+      $fee = ($request->amount * 0.015) / 100;
+    } else {
+      $fee = ($request->amount * 0.025) / 100;
+    }
+  }
+```
