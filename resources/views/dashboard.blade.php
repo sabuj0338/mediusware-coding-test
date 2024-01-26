@@ -33,7 +33,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($allTransactions as $item)
+                            @foreach ($allTransactions as $item)
                                 <tr class="bg-white border-b">
                                     <th class="px-6 py-4">
                                         {{ $item->date }}
@@ -54,10 +54,13 @@
                                         {{ $item->fee }}
                                     </td>
                                 </tr>
-                            @empty
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
+
+                    <div class="px-5 py-2">
+                      {{ $allTransactions->links() }}
+                    </div>
                 </div>
             </div>
         </div>

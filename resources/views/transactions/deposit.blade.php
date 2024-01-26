@@ -61,7 +61,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($depositList as $item)
+                                @foreach ($depositList as $item)
                                     <tr class="bg-white border-b">
                                         <th class="px-6 py-4">
                                             {{ $item->date }}
@@ -80,10 +80,13 @@
                                             {{ $item->amount }}
                                         </td>
                                     </tr>
-                                @empty
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
+                        
+                        <div class="px-5 py-2">
+                          {{ $depositList->links() }}
+                        </div>
                     </div>
                 </div>
             </div>
