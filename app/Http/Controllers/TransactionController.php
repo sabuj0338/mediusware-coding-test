@@ -79,7 +79,7 @@ class TransactionController extends Controller
 
     if ($user->account_type == 'individual') {
       if ($isFriday == false) {
-        $thisMonthSum = Transaction::where('user_id', $user->id)->where('transaction_type', 'deposit')->whereMonth('date', '=', Carbon::now()->month)->sum('amount');
+        $thisMonthSum = Transaction::where('user_id', $user->id)->where('transaction_type', 'withdrawal')->whereMonth('date', '=', Carbon::now()->month)->sum('amount');
         // $lastMonthSum = Transaction::where('user_id', $user->id)->whereMonth('date', '=', Carbon::now()->subMonth()->month)->sum('amount');
 
         if($thisMonthSum >= 5000) {
