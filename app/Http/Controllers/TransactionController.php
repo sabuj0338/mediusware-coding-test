@@ -82,20 +82,40 @@ class TransactionController extends Controller
         $thisMonthSum = Transaction::where('user_id', $user->id)->where('transaction_type', 'withdrawal')->whereMonth('date', '=', Carbon::now()->month)->sum('amount');
         // $lastMonthSum = Transaction::where('user_id', $user->id)->whereMonth('date', '=', Carbon::now()->subMonth()->month)->sum('amount');
 
-        if($thisMonthSum >= 5000) {
-          if($request->amount >= 1000) {
+        if ($thisMonthSum >= 5000) {
+          if ($request->amount >= 1000) {
             $amount = ($request->amount - 1000);
             $fee = ($amount * 0.015) / 100;
           } else {
             $fee = ($request->amount * 0.015) / 100;
+          }
+        } else if ($thisMonthSum < 5000) {
+          $finalAmount = 0;
+
+          if ($request->amount + $thisMonthSum > 5000) {
+            $finalAmount = ($request->amount + $thisMonthSum) - 5000;
+
+            if ($finalAmount >= 1000) {
+              $amount = ($finalAmount - 1000);
+              $fee = ($amount * 0.015) / 100;
+            } else {
+              $fee = ($finalAmount * 0.015) / 100;
+            }
           }
         }
       }
     } else if ($user->account_type == 'business') {
       $totalWithdrawal = Transaction::where('user_id', $user->id)->where('transaction_type', 'withdrawal')->sum('amount');
 
-      if($totalWithdrawal >= 50000) {
+      if ($totalWithdrawal >= 50000) {
         $fee = ($request->amount * 0.015) / 100;
+      } else if($totalWithdrawal < 50000) {
+        if($request->amount + $totalWithdrawal > 50000) {
+          $finalAmount = ($request->amount + $totalWithdrawal) - 50000;
+          $fee = ($finalAmount * 0.015) / 100;
+        } else {
+          $fee = ($request->amount * 0.025) / 100;
+        }
       } else {
         $fee = ($request->amount * 0.025) / 100;
       }
